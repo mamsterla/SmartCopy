@@ -779,7 +779,7 @@ function updateMessage(color, messagetext) {
     $(message).html(messagehtml + messagetext);
 }
 
-function getPageCode() {
+async function getPageCode() {
     if (loggedin && exists(accountinfo)) {
         document.querySelector('#message').style.display = "none";
         document.querySelector('#loginspinner').style.display = "none";
@@ -795,8 +795,9 @@ function getPageCode() {
                 loadPage(response);
             });
         } else if (collection.parseProfileData) {
+            var tabId = await getTabId();
             chrome.scripting.executeScript({
-                target: {tabId: getTabId()},
+                target: {tabId: tabId},
                 files: ["getPagesSource.js"]
             }, function () {
                 if (chrome.runtime.lastError) {
@@ -812,7 +813,6 @@ function getPageCode() {
 async function getTabId() {
     let queryOptions = { active: true, currentWindow: true };
     let tabs = await chrome.tabs.query(queryOptions);
-    console.log("Tab Id returns:", tabs[0].id);
     return tabs[0].id;
 }
 
